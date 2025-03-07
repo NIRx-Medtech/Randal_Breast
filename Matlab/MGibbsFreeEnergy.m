@@ -44,21 +44,30 @@ switch component
 end
 
 % Compute the Centroid Matrix from Signal Matrices
-Ldat = MComputeCentroids(SignalMatrixO, SignalMatrixD);
+Ldat = MComputeCentroids(SignalMatrixO, SignalMatrixD); % See MComputeCentroids.m for the columns of Ldat
 
 % Initialize the Gibbs Free Energy Matrix for 100 transition pairs
-Gisit = zeros([100, 4]);
+Gisit = zeros([100, 4]); %1st col:Transition type index; 2nd col:Starting state; 3rd col:Ending state; 4th column:GFE
 
 % Compute Gibbs Free Energy for each transition pair
 for k2 = 1:100
     % Extract relevant centroid data and add DC
     G3 = Ldat(k2, [k1+4, k1+9]) + DC;
-    
+
+
     % Compute Gibbs Free Energy using the logarithmic ratio
     Gisit(k2, :) = [Ldat(k2, 1:3), G3(1) * log(G3(1) / G3(2))];
 end
+% In the ‘Mar21_24_GFEforms.m’ MATLAB script, commands in lines 114-180 compute individual-
+% subject GFE values for every transition type and Hb-signal component, for each of the four breast
+% groups. The input for the GFE computations is the pre- and post-transition mean-value data in the
+% ‘LeftCentroids_AllHb.mat’ and ‘RightCentroids_AllHb.mat’ files. Four arrays, called ‘GL’
+% (1001545), ‘GR’ (1001545), ‘GT’ (1001518), and ‘GU’ (1001518) are generated. The first
+% dimension is the number of transition types, and the third is the number of subjects in the respective
+% breast group. The second dimension is 15 because we originally considered three different GFE
+% formulations; now we are using only one of the three formulations, or 5 of the 15 dimension-2
+% columns.
 
 % Reshape the computed Gibbs Free Energy into a 10x10 matrix
 GFE = reshape(Gisit(:, 4), [10, 10])';
-
 end
